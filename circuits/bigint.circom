@@ -976,4 +976,19 @@ template BigMultShortLong2DUnequal(n, ka, kb, la, lb) {
     }
 }
 
-
+// in[i] in 0... 2**n-1
+// represent in = in[0] + in[1] * 2**n + .. + in[k - 1] * 2**(n * k)
+template BigToBits(n, k) {
+    assert(n <= 252);
+    signal input in[k];
+    signal output out[n*k];
+    component n2b[k];
+    for (var i = 0;i < k;i++) {
+        n2b[i] = Num2Bits(n);
+        n2b[i].in <== in[i];
+        for (var j = 0;j < n;j++) {
+            var bitIndex = j + n*i;
+            out[bitIndex] <== n2b[i].out[j];
+        }
+    }
+} 
