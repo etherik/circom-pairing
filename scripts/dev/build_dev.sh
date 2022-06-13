@@ -16,7 +16,7 @@ if [ ! -d "$BUILD_DIR" ]; then
     mkdir "$BUILD_DIR"
 fi
 
-echo $PWD
+# echo $PWD
 
 echo "****COMPILING CIRCUIT****"
 start=`date +%s`
@@ -25,18 +25,18 @@ circom "$CIRCUIT_NAME".circom --O1 --r1cs --sym --c --output "$BUILD_DIR"
 end=`date +%s`
 echo "DONE ($((end-start))s)"
 
-echo "****COMPILING C++ WITNESS GENERATION CODE****"
-start=`date +%s`
-cd "$BUILD_DIR"/"$CIRCUIT_NAME"_cpp 
-make
-end=`date +%s`
-echo "DONE ($((end-start))s)"
+# echo "****COMPILING C++ WITNESS GENERATION CODE****"
+# start=`date +%s`
+# cd "$BUILD_DIR"/"$CIRCUIT_NAME"_cpp 
+# make
+# end=`date +%s`
+# echo "DONE ($((end-start))s)"
 
-echo "****VERIFYING WITNESS****"
-start=`date +%s`
-./"$CIRCUIT_NAME" ../../../scripts/"$CIRCUIT_NAME"/input_"$CIRCUIT_NAME".json ../witness.wtns
-end=`date +%s`
-echo "DONE ($((end-start))s)"
+# echo "****VERIFYING WITNESS****"
+# start=`date +%s`
+# ./"$CIRCUIT_NAME" ../../../scripts/"$CIRCUIT_NAME"/input_"$CIRCUIT_NAME".json ../witness.wtns
+# end=`date +%s`
+# echo "DONE ($((end-start))s)"
 
 # cd ..
 # npx snarkjs wej witness.wtns witness.json
