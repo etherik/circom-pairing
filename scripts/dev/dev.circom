@@ -1,6 +1,6 @@
 pragma circom 2.0.3;
 
-include "../../circuits/bn254/groth16.circom";
+include "../../circuits/isokratia/isokratia.circom";
 
-component main = verifyProof(1);
+component main = Isokratia(5);
 
