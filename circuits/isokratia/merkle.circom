@@ -71,7 +71,7 @@ template MerkleCheckAndMod(levels) {
         moddedHashers[i].right <== moddedSelectors[i].out[1];
     }
 
-    moddedRoot <== hashers[levels - 1].hash;
+    moddedRoot <== moddedHashers[levels - 1].hash;
 }
 
 // Verify mimc(address(pubkey)) is in the merkle tree and return modded tree without the value if it is

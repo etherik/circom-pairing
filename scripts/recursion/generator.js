@@ -86,22 +86,9 @@ function generateMerkleTree(keys) {
         return mimcHasher(BigInt(wallet.address));
     })
 
-    console.log('preAddress', keys.map((key) => {
-        if (!key) {
-            return 0;
-        }
-        console.log('key', key);
-        const wallet = new ethers.Wallet(key);
-        return wallet.address;
-    }))
-
     console.log('leafs', leafs);
 
     const tree = new MerkleTree(5, leafs, { hashFunction: mimcHasher });
-
-    const randproof = tree.path(0);
-
-    console.log("randproof", randproof);
 
     return tree;
 }
@@ -116,7 +103,7 @@ async function generateTestCases() {
     const rawProof = fs.readFileSync("../../python/fixtures/full-circom-input-0.json");
     const proof = JSON.parse(rawProof);
 
-    for (var idx = 0; idx < 2; idx++) {
+    for (var idx = 0; idx < privkeys.length; idx++) {
         const proverPrivkey = privkeys[idx];
         const proverPubkey = Point.fromPrivateKey(proverPrivkey);
         const msg = "teapot";
@@ -136,7 +123,7 @@ async function generateTestCases() {
         // Generate merkle tree and path
         const eligibleTree = generateMerkleTree(privkeys);
         const eligiblePathData = eligibleTree.path(idx);
-        const onlyEnabled = privkeys.map((privkey, i) => { return (idx == i || i == 0) ? privkey : 0; });
+        const onlyEnabled = privkeys.map((privkey, i) => { return idx == i ? privkey : 0; });
         console.log("onlyEnabled", onlyEnabled);
         const voterTree = generateMerkleTree(onlyEnabled);
         const voterPathData = voterTree.path(idx);
@@ -144,17 +131,12 @@ async function generateTestCases() {
         console.log("voterPathElements", voterPathData.pathElements);
         console.log("msghash", msghash);
 
-        let voteCount = 0;
-        for (const elem of onlyEnabled) {
-            voteCount += (elem != 0) ? 1 : 0;
-        }
-
-        const pubCommit = commitmentComputer(voteCount, eligiblePathData.pathRoot, voterPathData.pathRoot, msghash_array.map((x) => x.toString()), proof);
+        const pubCommit = commitmentComputer(1, eligiblePathData.pathRoot, voterPathData.pathRoot, msghash_array.map((x) => x.toString()), proof);
 
         const json = JSON.stringify(
             {
                 semiPublicCommitment: pubCommit,
-                voteCount: voteCount,
+                voteCount: 1,
                 eligibleRoot: eligiblePathData.pathRoot,
                 voterRoot: voterPathData.pathRoot,
                 r: r_array.map((x) => x.toString()),

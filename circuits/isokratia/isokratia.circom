@@ -122,6 +122,9 @@ template Isokratia(levels) {
         }
     }
 
+    log(168);
+    log(computedCommitment.out);
+
     semiPublicCommitment === computedCommitment.out;
 
     component correct = MultiAND(4);
@@ -134,6 +137,9 @@ template Isokratia(levels) {
         sigVerify.msghash[i] <== msghash[i];
         for (var j = 0;j < 2;j++) sigVerify.pubkey[j][i] <== pubkey[j][i];
     }
+
+    log(999);
+    log(sigVerify.result);
 
     correct.in[0] <== sigVerify.result;
 
@@ -148,6 +154,9 @@ template Isokratia(levels) {
         eligible.pathIndices[i] <== pathIndices[i];
     }
 
+    log(888);
+    log(eligible.valid);
+
     correct.in[1] <== eligible.valid;
 
     // Check pubkey in voter merkle tree, and get NULL-modded root
@@ -160,6 +169,12 @@ template Isokratia(levels) {
         voters.pathElements[i] <== voterPathElements[i];
         voters.pathIndices[i] <== pathIndices[i];
     }
+
+    log(777);
+    log(voters.valid);
+    
+    log(33333);
+    log(voters.moddedRoot);
 
     correct.in[2] <== voters.valid;
 
@@ -185,6 +200,9 @@ template Isokratia(levels) {
             }
         }
     }
+
+    log(444);
+    log(innerCommitment.out);
 
     // check inner snark given commitment
     component groth16Verifier = verifyProof(1);
@@ -215,13 +233,19 @@ template Isokratia(levels) {
     }
     groth16Verifier.pubInput[0] <== innerCommitment.out;
 
-    correct.in[3] <== groth16Verifier.out;
+    log(555);
+    log(groth16Verifier.out);
 
+    component oneVote = IsEqual();
+    oneVote.in[0] <== 1;
+    oneVote.in[1] <== voteCount;
     component innermostORcorrect = OR();
-    innermostORcorrect.a <== correct.out;
-    component noVotes = IsEqual();
-    noVotes.in[0] <== 1;
-    noVotes.in[1] <== voteCount;
-    innermostORcorrect.b <== noVotes.out;
-    innermostORcorrect.out === 1;
+    innermostORcorrect.a <== groth16Verifier.out;
+    innermostORcorrect.b <== oneVote.out;
+    correct.in[3] <== innermostORcorrect.out;
+
+    log(3077);
+    log(correct.out);
+
+    correct.out === 1;
 }
