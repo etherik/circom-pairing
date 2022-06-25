@@ -976,4 +976,18 @@ template BigMultShortLong2DUnequal(n, ka, kb, la, lb) {
     }
 }
 
+template Bits2Big(n, k) {
+    assert(n*k == 256);
+    signal input in[256];
+    signal output out[k];
 
+    component Bits2Small[k];
+    for (var i = 0;i < k;i++) {
+        Bits2Small[i] = Bits2Num(n);
+        for (var j = 0;j < n;j++) {
+            Bits2Small[i].in[j] <== in[i*n + j];
+        }
+    }
+
+    for (var i = 0;i < k;i++) out[i] <== Bits2Small[i].out;
+}

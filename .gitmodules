@@ -4,6 +4,3 @@
 [submodule "circom-ecdsa"]
 	path = circom-ecdsa
 	url = https://github.com/0xPARC/circom-ecdsa.git
-[submodule "keccak256-circom"]
-	path = keccak256-circom
-	url = https://github.com/vocdoni/keccak256-circom.git
