@@ -1,8 +1,8 @@
 #!/bin/bash
 
 PHASE1=../../circuits/powersOfTau28_hez_final_25.ptau
-BUILD_DIR=../../build/dev
-CIRCUIT_NAME=dev
+BUILD_DIR=../../build/devdos
+CIRCUIT_NAME=devdos
 
 if [ -f "$PHASE1" ]; then
     echo "Found Phase 1 ptau file"

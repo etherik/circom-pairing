@@ -1,5 +1,13 @@
 pragma circom 2.0.3;
 
+include "../../node_modules/circomlib/circuits/mimcsponge.circom";
+include "../../node_modules/circomlib/circuits/bitify.circom";
+include "../../circom-ecdsa/circuits/ecdsa.circom";
+include "../../circom-ecdsa/circuits/eth_addr.circom";
+include "../bigint.circom";
+include "./utils.circom";
+include "../bn254/groth16.circom";
+
 /*
 SOURCE -> SINK, proof by SOURCE upto SINK
 
@@ -18,7 +26,7 @@ template commitment(k2, pubInpCount) {
 
     signal output out;
 
-    component hasher = MiMCSponge(6 * 2 * k2 + 2 * 2 * 2 * k2 + (pubInpCount + 1) * 2 * k, 220, 1);
+    component hasher = MiMCSponge(6 * 2 * k2 + 2 * 2 * 2 * k2 + (pubInpCount + 1) * 2 * k2, 220, 1);
     hasher.k <== 123;
 
     var mimcIdx = 0;
@@ -77,7 +85,10 @@ template sourceAddressAssembly(n, k) {
     address <== pubToAddr.address;
 }
 
-template EthDos(pubInpCount) {
+template EthDos() {
+    // this circuit fact
+    var pubInpCount = 4;
+
     // ecdsa fact
     var n1 = 64;
     var k1 = 4;
@@ -143,7 +154,7 @@ template EthDos(pubInpCount) {
     component msgHashBits = EthSignedAdressMessageHash();
     msgHashBits.address <== sinkAddress;
     component msgHashBig = Bits2Big(n1, k1);
-    for (var i = 0;i < 256;i++) msgHashBig.in[i] <== msgHashBits.out;
+    for (var i = 0;i < 256;i++) msgHashBig.in[i] <== msgHashBits.out[i];
     
 
     component sigVerify = ECDSAVerifyNoPubkeyCheck(n1, k1);
@@ -154,7 +165,7 @@ template EthDos(pubInpCount) {
         for (var j = 0;j < 2;j++) sigVerify.pubkey[j][i] <== sourcePubkey[j][i];
     }
 
-    sigVerify.out === 1;
+    sigVerify.result === 1;
 
     // check recursive snark
     component groth16Verifier = verifyProof(pubInpCount);
@@ -202,8 +213,8 @@ template EthDos(pubInpCount) {
     groth16Verifier.pubInput[3] <== sourceAddress.address;
 
     component innermost = IsEqual();
-    innermost.a <== degree;
-    innermost.b <== 1;
+    innermost.in[0] <== degree;
+    innermost.in[1] <== 1;
 
     component innermostORcorrect = OR();
     innermostORcorrect.a <== innermost.out;

@@ -1,9 +1,6 @@
 pragma circom 2.0.3;
 
-include "circomlib/poseidon.circom";
-include "circomlib/bitify.circom";
-include "circomlib/comparators.circom";
-include "../../keccak256-circom/circuits/keccak.circom";
+include "../../circom-ecdsa/circuits/vocdoni-keccak/keccak.circom";
 
 template EthSignedAdressMessageHash() {
     signal input address;
