@@ -153,8 +153,17 @@ template EthDos() {
     // ecdsa verify using msghash from other thing
     component msgHashBits = EthSignedAdressMessageHash();
     msgHashBits.address <== sinkAddress;
+    log(11115);
+    for (var i = 0;i < 256;i++) {
+        log(msgHashBits.out[i]);
+    }
     component msgHashBig = Bits2Big(n1, k1);
     for (var i = 0;i < 256;i++) msgHashBig.in[i] <== msgHashBits.out[i];
+
+    log(112);
+    for (var i = 0;i < k1;i++) {
+        log(msgHashBig.out[i]);
+    }
     
 
     component sigVerify = ECDSAVerifyNoPubkeyCheck(n1, k1);
@@ -164,6 +173,9 @@ template EthDos() {
         sigVerify.msghash[i] <== msgHashBig.out[i];
         for (var j = 0;j < 2;j++) sigVerify.pubkey[j][i] <== sourcePubkey[j][i];
     }
+
+    log(222);
+    log(sigVerify.result);
 
     sigVerify.result === 1;
 
@@ -215,6 +227,9 @@ template EthDos() {
     component innermost = IsEqual();
     innermost.in[0] <== degree;
     innermost.in[1] <== 1;
+
+    log(333);
+    log(innermost.out);
 
     component innermostORcorrect = OR();
     innermostORcorrect.a <== innermost.out;

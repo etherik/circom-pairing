@@ -20,21 +20,22 @@ template EthSignedAdressMessageHash() {
     component chunks[40];
     component adder[40];
     component reChunks[40];
-    for (var i = 0;i < 160;i += 4) {
-        chunks[i/4] = Bits2Num(4);
+    for (var i = 0;i < 40;i++) {
+        chunks[i] = Bits2Num(4);
         for (var j = 0;j < 4;j++) {
-            chunks[i/4].in[j] <== addressBits[i + j];
+            chunks[i].in[j] <== addressBits[i*4 + j];
         }
 
-        adder[i/4] = GreaterThan(4);
-        adder[i/4].in[0] <== chunks[i/4].out;
-        adder[i/4].in[1] <== 9;
+        adder[i] = GreaterThan(4);
+        adder[i].in[0] <== chunks[i].out;
+        adder[i].in[1] <== 9;
 
 
-        reChunks[i/4] = Num2Bits(8);
-        reChunks[i/4].in <== chunks[i/4].out + 48 + (adder[i/4].out * 39);
+        reChunks[i] = Num2Bits(8);
+        reChunks[i].in <== chunks[i].out + 48 + (adder[i].out * 39);
         for (var j = 0;j < 8;j++) {
-            moddedBits[(156-i)*2 + j] <== reChunks[i/4].out[j];
+            var tmp = (156-i*4)*2 + j;
+            moddedBits[tmp] <== reChunks[i].out[j];
         }
     }
 
@@ -53,7 +54,7 @@ template EthSignedAdressMessageHash() {
     //}
 
     component keck = Keccak(560, 256);
-    for (var i = 0; i < 560 / 8; i += 1) {
+    for (var i = 0; i < 70; i++) {
       for (var j = 0; j < 8; j++) {
         // keck.in[8*i + j] <== reverse[8*i + (7-j)];
         keck.in[8*i + j] <== fullMsgBits[8*i + j];

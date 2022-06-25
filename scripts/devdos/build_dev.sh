@@ -18,6 +18,21 @@ fi
 
 echo $PWD
 
+# echo "****COMPILING CIRCUIT****"
+# start=`date +%s`
+# #circom "$CIRCUIT_NAME".circom --O1 --r1cs --wasm --sym --c --wat --output "$BUILD_DIR"
+# circom "$CIRCUIT_NAME".circom --O1 --r1cs --wasm --sym --output "$BUILD_DIR"
+# end=`date +%s`
+# echo "DONE ($((end-start))s)"
+
+# echo "****GENERATING WITNESS FOR SAMPLE INPUT****"
+# start=`date +%s`
+# node "$BUILD_DIR"/"$CIRCUIT_NAME"_js/generate_witness.js "$BUILD_DIR"/"$CIRCUIT_NAME"_js/"$CIRCUIT_NAME".wasm input_"$CIRCUIT_NAME".json "$BUILD_DIR"/witness.wtns
+# end=`date +%s`
+# echo "DONE ($((end-start))s)"
+# npx snarkjs wej "$BUILD_DIR"/witness.wtns "$BUILD_DIR"/witness.json
+
+
 echo "****COMPILING CIRCUIT****"
 start=`date +%s`
 #circom "$CIRCUIT_NAME".circom --O0 --c --output "$BUILD_DIR"

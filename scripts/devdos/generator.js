@@ -5,6 +5,8 @@ const keccak256 = require("keccak256");
 const fs = require("fs");
 const mimcfs = require("./mimc.js");
 const mimc = require("./mimc.js");
+const privateKeyToAddress = require('ethereum-private-key-to-address');
+const { exit } = require("process");
 
 const mimcHasher = mimcfs.mimcHash(123);
 
@@ -60,15 +62,8 @@ function Uint8Array_to_bigint(x) {
     return ret;
 }
 
-function commitmentComputer(voteCount,
-    eligibleRoot,
-    voterRoot,
-    msghash,
-    proof) {
-        return mimcHasher(voteCount,
-            eligibleRoot,
-            voterRoot,
-            ...msghash,
+function commitmentComputer(proof) {
+        return mimcHasher(
             ...proof.negalfa1xbeta2.flat(20),
             ...proof.gamma2.flat(20),
             ...proof.delta2.flat(20),
@@ -76,53 +71,33 @@ function commitmentComputer(voteCount,
             )
 }
 
-function generateMerkleTree(keys) {
-    let leafs = keys.map((key) => {
-        if (!key) {
-            return 0;
-        }
-        console.log('key', key);
-        const wallet = new ethers.Wallet(key);
-        return mimcHasher(BigInt(wallet.address));
-    })
-
-    console.log('preAddress', keys.map((key) => {
-        if (!key) {
-            return 0;
-        }
-        console.log('key', key);
-        const wallet = new ethers.Wallet(key);
-        return wallet.address;
-    }))
-
-    console.log('leafs', leafs);
-
-    const tree = new MerkleTree(5, leafs, { hashFunction: mimcHasher });
-
-    const randproof = tree.path(0);
-
-    console.log("randproof", randproof);
-
-    return tree;
-}
 
 async function generateTestCases() {
     const test_cases = [];
     const privkeys = [88549154299169935420064281163296845505587953610183896504176354567359434168161n,
+        98855089179455197279583810751921776194429729927600246755329568052735742445312n,
         37706893564732085918706190942542566344879680306879183356840008504374628845468n,
         90388020393783788847120091912026443124559466591761394939671630294477859800601n,
         110977009687373213104962226057480551605828725303063265716157300460694423838923n];
 
-    const rawProof = fs.readFileSync("../../python/fixtures/full-circom-input-0.json");
-    const proof = JSON.parse(rawProof);
+    const ethAddresses = privkeys.map((x) => privateKeyToAddress(intToHex(x.toString())).toLowerCase());
+    console.log("ethAddresses", ethAddresses);
 
-    for (var idx = 0; idx < 2; idx++) {
-        const proverPrivkey = privkeys[idx];
-        const proverPubkey = Point.fromPrivateKey(proverPrivkey);
-        const msg = "teapot";
+    for (var idx = 0; idx < privkeys.length - 1; idx++) {
+        const rawProof = fs.readFileSync('../../python/fixtures/full-circom-input-' + idx + '.json');
+        const proof = JSON.parse(rawProof);
+
+        const sourcePrivkey = privkeys[idx];
+        const sourcePubkey = Point.fromPrivateKey(sourcePrivkey);
+        
+        const sinkAddress = ethAddresses[idx + 1].toLowerCase();
+        console.log("sinkAddress", sinkAddress);
+
+        const msg = "\x19Ethereum Signed Message:\n42" + sinkAddress;
+
         const msghash_bigint = Uint8Array_to_bigint(keccak256(msg));
         const msghash = bigint_to_Uint8Array(msghash_bigint);
-        const sig = await sign(msghash, bigint_to_Uint8Array(proverPrivkey), {
+        const sig = await sign(msghash, bigint_to_Uint8Array(sourcePrivkey), {
             canonical: true,
             der: false,
         });
@@ -132,39 +107,29 @@ async function generateTestCases() {
         var s_bigint = Uint8Array_to_bigint(s);
         var r_array = bigint_to_array(64, 4, r_bigint);
         var s_array = bigint_to_array(64, 4, s_bigint);
-        var msghash_array = bigint_to_array(64, 4, msghash_bigint);
-        // Generate merkle tree and path
-        const eligibleTree = generateMerkleTree(privkeys);
-        const eligiblePathData = eligibleTree.path(idx);
-        const onlyEnabled = privkeys.map((privkey, i) => { return (idx == i || i == 0) ? privkey : 0; });
-        console.log("onlyEnabled", onlyEnabled);
-        const voterTree = generateMerkleTree(onlyEnabled);
-        const voterPathData = voterTree.path(idx);
-        console.log("eligiblePathElements", eligiblePathData.pathElements);
-        console.log("voterPathElements", voterPathData.pathElements);
-        console.log("msghash", msghash);
 
-        let voteCount = 0;
-        for (const elem of onlyEnabled) {
-            voteCount += (elem != 0) ? 1 : 0;
+        const semiPubCommit = commitmentComputer(proof);
+
+        const originator = hexStringToBigInt(ethAddresses[0]);
+
+        // copy proof without pubInput
+        const proofNoPubInp = {}
+        for (const [k, v] of Object.entries(proof)) {
+            if (k !== "pubInput") {
+                proofNoPubInp[k] = v;
+            }
         }
-
-        const pubCommit = commitmentComputer(voteCount, eligiblePathData.pathRoot, voterPathData.pathRoot, msghash_array.map((x) => x.toString()), proof);
 
         const json = JSON.stringify(
             {
-                semiPublicCommitment: pubCommit,
-                voteCount: voteCount,
-                eligibleRoot: eligiblePathData.pathRoot,
-                voterRoot: voterPathData.pathRoot,
+                semiPublicCommitment: semiPubCommit,
+                degree: idx + 1,
+                originator: originator.toString(),
+                sinkAddress: hexStringToBigInt(sinkAddress).toString(),
                 r: r_array.map((x) => x.toString()),
                 s: s_array.map((x) => x.toString()),
-                msghash: msghash_array.map((x) => x.toString()),
-                pubkey: [bigint_to_array(64, 4, proverPubkey.x).map((x) => x.toString()), bigint_to_array(64, 4, proverPubkey.y).map((x) => x.toString())],
-                eligiblePathElements: eligiblePathData.pathElements,
-                voterPathElements: voterPathData.pathElements,
-                pathIndices: voterPathData.pathIndices,
-                ...proof,
+                sourcePubkey: [bigint_to_array(64, 4, sourcePubkey.x).map((x) => x.toString()), bigint_to_array(64, 4, sourcePubkey.y).map((x) => x.toString())],
+                ...proofNoPubInp,
             },
             null,
             "\t"
