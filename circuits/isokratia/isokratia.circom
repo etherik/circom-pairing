@@ -220,7 +220,7 @@ template Isokratia(levels) {
                 groth16Verifier.gamma2[i][j][idx] <== gamma2[i][j][idx];
                 groth16Verifier.delta2[i][j][idx] <== delta2[i][j][idx];
                 groth16Verifier.IC[i][j][idx] <== IC[i][j][idx];
-                groth16Verifier.pb[i][j][idx] <== pb[i][j][idx];                
+                groth16Verifier.pb[i][j][idx] <== pb[i][j][idx];
             }
         }
     }

@@ -97,7 +97,7 @@ function generateMerkleTree(keys) {
 
     console.log('leafs', leafs);
 
-    const tree = new MerkleTree(5, leafs, { hashFunction: mimcHasher });
+    const tree = new MerkleTree(22, leafs, { hashFunction: mimcHasher });
 
     const randproof = tree.path(0);
 
@@ -116,11 +116,12 @@ async function generateTestCases() {
     const rawProof = fs.readFileSync("../../python/fixtures/full-circom-input-0.json");
     const proof = JSON.parse(rawProof);
 
-    for (var idx = 0; idx < 2; idx++) {
+    for (var idx = 0; idx < 1; idx++) {
         const proverPrivkey = privkeys[idx];
         const proverPubkey = Point.fromPrivateKey(proverPrivkey);
-        const msg = "teapot";
+        const msg = "\x19Ethereum Signed Message:\n83iso58e50c14a4c3018f6053a8731bccea72fd9c0c9658e50c14a4c3018f6053a8731bccea72fd9c0c96";
         const msghash_bigint = Uint8Array_to_bigint(keccak256(msg));
+        console.log('msghash_bigint', msghash_bigint);
         const msghash = bigint_to_Uint8Array(msghash_bigint);
         const sig = await sign(msghash, bigint_to_Uint8Array(proverPrivkey), {
             canonical: true,
@@ -133,6 +134,7 @@ async function generateTestCases() {
         var r_array = bigint_to_array(64, 4, r_bigint);
         var s_array = bigint_to_array(64, 4, s_bigint);
         var msghash_array = bigint_to_array(64, 4, msghash_bigint);
+        console.log('msghash_array', msghash_array);
         // Generate merkle tree and path
         const eligibleTree = generateMerkleTree(privkeys);
         const eligiblePathData = eligibleTree.path(idx);

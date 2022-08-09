@@ -32,11 +32,11 @@ cd "$BUILD_DIR"/"$CIRCUIT_NAME"_cpp
 # end=`date +%s`
 # echo "DONE ($((end-start))s)"
 
-echo "****GENERATING WITNESS****"
-start=`date +%s`
-./"$CIRCUIT_NAME" ../../../scripts/"$CIRCUIT_NAME"/input_"$CIRCUIT_NAME".json ../witness.wtns
-end=`date +%s`
-echo "DONE ($((end-start))s)"
+# echo "****GENERATING WITNESS****"
+# start=`date +%s`
+# ./"$CIRCUIT_NAME" ../../../scripts/"$CIRCUIT_NAME"/input_"$CIRCUIT_NAME".json ../witness.wtns
+# end=`date +%s`
+# echo "DONE ($((end-start))s)"
 
 cd ..
 # # snarkjs wej witness.wtns witness.json
