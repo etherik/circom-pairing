@@ -32,53 +32,54 @@ cd "$BUILD_DIR"/"$CIRCUIT_NAME"_cpp
 # end=`date +%s`
 # echo "DONE ($((end-start))s)"
 
-echo "****GENERATING WITNESS****"
-start=`date +%s`
-./"$CIRCUIT_NAME" ../../../scripts/"$CIRCUIT_NAME"/input_"$CIRCUIT_NAME".json ../witness.wtns
-end=`date +%s`
-echo "DONE ($((end-start))s)"
+# # echo "****GENERATING WITNESS****"
+# # start=`date +%s`
+# # ./"$CIRCUIT_NAME" ../../../scripts/"$CIRCUIT_NAME"/input_"$CIRCUIT_NAME".json ../witness.wtns
+# # end=`date +%s`
+# # echo "DONE ($((end-start))s)"
 
 cd ..
-# # snarkjs wej witness.wtns witness.json
+# # # snarkjs wej witness.wtns witness.json
 
 # echo "****GENERATING ZKEY 0****"
 # start=`date +%s`
-# /data/node/out/Release/node --trace-gc --trace-gc-ignore-scavenger --max-old-space-size=2048000 --initial-old-space-size=2048000 --no-global-gc-scheduling --no-incremental-marking --max-semi-space-size=1024 --initial-heap-size=2048000 --expose-gc /data/snarkjs/cli.js zkey new "$CIRCUIT_NAME".r1cs "$PHASE1" "$CIRCUIT_NAME"_0.zkey -v > zkey0.out
+# /data/node/out/Release/node --trace-gc --trace-gc-ignore-scavenger --max-old-space-size=2048000 --initial-old-space-size=2048000 --no-global-gc-scheduling --no-incremental-marking --max-semi-space-size=1024 --initial-heap-size=2048000 --expose-gc /data/snarkjs/cli.js zkey new "$CIRCUIT_NAME".r1cs "$PHASE1" "$CIRCUIT_NAME"_0.zkey -v > zkeyor.out
 # end=`date +%s`
 # echo "DONE ($((end-start))s)"
 
 # echo "****CONTRIBUTE TO PHASE 2 CEREMONY****"
 # start=`date +%s`
-# /data/node/out/Release/node /data/snarkjs/cli.js zkey contribute -verbose "$CIRCUIT_NAME"_0.zkey "$CIRCUIT_NAME".zkey -n="First phase2 contribution" -e="some random text 5555" > contribute.out
+# /data/node/out/Release/node /data/snarkjs/cli.js zkey contribute -verbose "$CIRCUIT_NAME"_0.zkey "$CIRCUIT_NAME".zkey -n="First phase2 contribution" -e="some random text 5555" > contributor.out
 # end=`date +%s`
 # echo "DONE ($((end-start))s)"
 
 # echo "****VERIFYING FINAL ZKEY****"
 # start=`date +%s`
-# /data/node/out/Release/node --trace-gc --trace-gc-ignore-scavenger --max-old-space-size=2048000 --initial-old-space-size=2048000 --no-global-gc-scheduling --no-incremental-marking --max-semi-space-size=1024 --initial-heap-size=2048000 --expose-gc /data/snarkjs/cli.js zkey verify -verbose "$CIRCUIT_NAME".r1cs "$PHASE1" "$CIRCUIT_NAME".zkey
+# /data/node/out/Release/node --trace-gc --trace-gc-ignore-scavenger --max-old-space-size=2048000 --initial-old-space-size=2048000 --no-global-gc-scheduling --no-incremental-marking --max-semi-space-size=1024 --initial-heap-size=2048000 --expose-gc /data/snarkjs/cli.js zkey verify -verbose "$CIRCUIT_NAME".r1cs "$PHASE1" "$CIRCUIT_NAME".zkey > zkeyverify.out
+# end=`date +%s`
 # end=`date +%s`
 # echo "DONE ($((end-start))s)"
 
-# echo "****EXPORTING VKEY****"
-# start=`date +%s`
-# /data/node/out/Release/node /data/snarkjs/cli.js zkey export verificationkey "$CIRCUIT_NAME".zkey vkey.json -v
-# end=`date +%s`
-# echo "DONE ($((end-start))s)"
-
-echo "****GENERATING PROOF FOR SAMPLE INPUT****"
+echo "****EXPORTING VKEY****"
 start=`date +%s`
-/data/rapidsnark/build/prover "$CIRCUIT_NAME".zkey witness.wtns proof.json public.json
+/data/node/out/Release/node /data/snarkjs/cli.js zkey export verificationkey "$CIRCUIT_NAME".zkey vkey.json -v
 end=`date +%s`
 echo "DONE ($((end-start))s)"
 
-echo "****VERIFYING PROOF FOR SAMPLE INPUT****"
-start=`date +%s`
-/data/node/out/Release/node /data/snarkjs/cli.js groth16 verify vkey.json public.json proof.json -v
-end=`date +%s`
-echo "DONE ($((end-start))s)"
-
-# echo "****EXPORTING VERIFIER TO SOLIDITY****"
+# echo "****GENERATING PROOF FOR SAMPLE INPUT****"
 # start=`date +%s`
-# /data/node/out/Release/node /data/snarkjs/cli.js zkey export solidityverifier "$CIRCUIT_NAME".zkey verifier.sol
+# /data/rapidsnark/build/prover "$CIRCUIT_NAME".zkey witness.wtns proof.json public.json
 # end=`date +%s`
 # echo "DONE ($((end-start))s)"
+
+# echo "****VERIFYING PROOF FOR SAMPLE INPUT****"
+# start=`date +%s`
+# /data/node/out/Release/node /data/snarkjs/cli.js groth16 verify vkey.json public.json proof.json -v
+# end=`date +%s`
+# echo "DONE ($((end-start))s)"
+
+echo "****EXPORTING VERIFIER TO SOLIDITY****"
+start=`date +%s`
+/data/node/out/Release/node /data/snarkjs/cli.js zkey export solidityverifier "$CIRCUIT_NAME".zkey verifier.sol
+end=`date +%s`
+echo "DONE ($((end-start))s)"

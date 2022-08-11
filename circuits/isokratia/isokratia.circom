@@ -2,70 +2,9 @@ pragma circom 2.0.3;
 
 include "../bn254/groth16.circom";
 include "merkle.circom";
+include "commitment.circom";
 include "../../circom-ecdsa/circuits/ecdsa.circom";
 include "../../circom-ecdsa/circuits/zk-identity/eth.circom";
-
-template commitment(k1, k2) {
-    signal input voteCount;
-    signal input eligibleRoot;
-    signal input voterRoot;
-    signal input msghash[k1];
-
-    signal input negalfa1xbeta2[6][2][k2]; // e(-alfa1, beta2)
-    signal input gamma2[2][2][k2];
-    signal input delta2[2][2][k2];
-    signal input IC[2][2][k2];
-
-    signal output out;
-
-    component hasher = MiMCSponge(3 + k1 + 6 * 2 * k2 + 3 * 2 * 2 * k2, 220, 1);
-    hasher.k <== 123;
-
-    hasher.ins[0] <== voteCount;
-    hasher.ins[1] <== eligibleRoot;
-    hasher.ins[2] <== voterRoot;
-    var mimcIdx = 3;
-    for (var i = 0;i < k1;i++) {
-        hasher.ins[mimcIdx] <== msghash[i];
-        mimcIdx++;
-    }
-    for (var i = 0;i < 6;i++) {
-        for (var j = 0;j < 2;j++) {
-            for (var idx = 0;idx < k2;idx++) {
-                hasher.ins[mimcIdx] <== negalfa1xbeta2[i][j][idx];
-                mimcIdx++;
-            }
-        }
-    }
-
-    for (var i = 0;i < 2;i++) {
-        for (var j = 0;j < 2;j++) {
-            for (var idx = 0;idx < k2;idx++) {
-                hasher.ins[mimcIdx] <== gamma2[i][j][idx];
-                mimcIdx++;
-            }
-        }
-    }
-    
-    for (var i = 0;i < 2;i++) {
-        for (var j = 0;j < 2;j++) {
-            for (var idx = 0;idx < k2;idx++) {
-                hasher.ins[mimcIdx] <== delta2[i][j][idx];
-                mimcIdx++;
-            }
-        }
-    }
-
-    for (var i = 0;i < 2;i++) {
-        for (var j = 0;j < 2;j++) {
-            for (var idx = 0;idx < k2;idx++) {
-                hasher.ins[mimcIdx] <== IC[i][j][idx];
-                mimcIdx++;
-            }
-        }
-    } 
-    out <== hasher.outs[0];
-}
 
 template Isokratia(levels) {
     // ecdsa fact

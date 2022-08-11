@@ -60,21 +60,33 @@ function Uint8Array_to_bigint(x) {
     return ret;
 }
 
-function commitmentComputer(voteCount,
+function commitmentComputer(
+    voteCount,
     eligibleRoot,
     voterRoot,
     msghash,
-    proof) {
-        return mimcHasher(voteCount,
-            eligibleRoot,
-            voterRoot,
-            ...msghash,
-            ...proof.negalfa1xbeta2.flat(20),
-            ...proof.gamma2.flat(20),
-            ...proof.delta2.flat(20),
-            ...proof.IC.flat(20),
-            )
+    proof
+  ) {
+    const commitmentInputsAny = [
+        voteCount,
+        eligibleRoot,
+        voterRoot,
+        ...msghash,
+        ...proof.negalfa1xbeta2.flat(20),
+        ...proof.gamma2.flat(20),
+        ...proof.delta2.flat(20),
+        ...proof.IC.flat(20),
+    ];
+    const commitmentInputs = commitmentInputsAny.map((x) => x.toString());
+    const commitmentInputTypes = [];
+    for (var idx = 0; idx < commitmentInputs.length; idx++)
+        commitmentInputTypes.push("uint256");
+
+    return ethers.BigNumber.from(
+        ethers.utils.soliditySha256(commitmentInputTypes, commitmentInputs)
+    ).shr(6).toString();
 }
+  
 
 function generateMerkleTree(keys) {
     let leafs = keys.map((key) => {
@@ -116,7 +128,7 @@ async function generateTestCases() {
     const rawProof = fs.readFileSync("../../python/fixtures/full-circom-input-0.json");
     const proof = JSON.parse(rawProof);
 
-    for (var idx = 0; idx < 1; idx++) {
+    for (var idx = 0; idx < privkeys.length; idx++) {
         const proverPrivkey = privkeys[idx];
         const proverPubkey = Point.fromPrivateKey(proverPrivkey);
         const msg = "\x19Ethereum Signed Message:\n83iso58e50c14a4c3018f6053a8731bccea72fd9c0c9658e50c14a4c3018f6053a8731bccea72fd9c0c96";
