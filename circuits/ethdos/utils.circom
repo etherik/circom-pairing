@@ -13,8 +13,12 @@ template EthSignedAdressMessageHash() {
 
     for (var i = 0;i < 160;i++) addressBits[i] <== addressConverter.out[i];
 
-    component prefixBits = Num2Bits(240);
-    prefixBits.in <== 829508926077469496995265318093206896209766079988389694804882883725247769;
+    component prefix1Bits = Num2Bits(240);
+    prefix1Bits.in <== 174416154161768351644703742350661337674511534951980036777361350784927060;
+
+    component prefix2Bits = Num2Bits(120);
+    prefix2Bits.in <== 375882444730857387225089211233218680;
+
 
     signal moddedBits[320];
     component chunks[40];
@@ -35,31 +39,46 @@ template EthSignedAdressMessageHash() {
         reChunks[i].in <== chunks[i].out + 48 + (adder[i].out * 39);
         for (var j = 0;j < 8;j++) {
             var tmp = (156-i*4)*2 + j;
-            moddedBits[tmp] <== reChunks[i].out[j];
+            moddedBits[tmp] <== reChunks[i].out[7 - j];
         }
     }
 
-    signal fullMsgBits[560];
+    signal fullMsgBits[680];
     for (var i = 0;i < 240;i++) {
-        fullMsgBits[i] <== prefixBits.out[i];
+        fullMsgBits[i] <== prefix1Bits.out[239 - i];
+    }
+    for (var i = 0;i < 120;i++) {
+        fullMsgBits[240 + i] <== prefix2Bits.out[119 - i];
     }
     for (var i = 0;i < 320;i++) {
-        fullMsgBits[240 + i] <== moddedBits[i];
+        fullMsgBits[360 + i] <== moddedBits[i];
     }
 
+    // for (var i = 0;i < 680;i++) out[i] <== fullMsgBits[i];
 
-    //signal reverse[560];
-    //for (var i = 0; i < 560; i++) {
-    //  reverse[i] <== fullMsgBits[559-i];
-    //}
+    // fullMsgBits matches preimage of ethers.utils
+    // ethers.utils.concat(
+	//	[ethers.utils.toUtf8Bytes(messagePrefix), 
+	//	 ethers.utils.toUtf8Bytes(String(message.length)), 
+	//	 ethers.utils.toUtf8Bytes(message)]);
 
-    component keck = Keccak(560, 256);
-    for (var i = 0; i < 70; i++) {
+
+    // signal reverse[680];
+    // for (var i = 0; i < 680; i++) {
+    //  reverse[i] <== fullMsgBits[679-i];
+    // }
+
+    component keck = Keccak(680, 256);
+    for (var i = 0; i < 85; i++) {
       for (var j = 0; j < 8; j++) {
-        // keck.in[8*i + j] <== reverse[8*i + (7-j)];
-        keck.in[8*i + j] <== fullMsgBits[8*i + j];
+        keck.in[8*i + j] <== fullMsgBits[8*i + (7-j)];
+        // keck.in[8*i + j] <== fullMsgBits[8*i + j];
       }
     }
 
-    for (var i = 0;i < 256;i++) out[i] <== keck.out[i];
+    for (var i = 0;i < 32;i++) {
+        for (var j = 0;j < 8;j++) {
+            out[8*i + j] <== keck.out[8*i + (7-j)];
+        }
+    }
 }

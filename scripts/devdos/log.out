@@ -1,0 +1,297 @@
+Found Phase 1 ptau file
+/home/nalin/code/circom-pairing/scripts/devdos
+****COMPILING CIRCUIT****
+[32mtemplate instances[0m: 63184
+non-linear constraints: 31306433
+linear constraints: 2312148
+public inputs: 4
+public outputs: 0
+private inputs: 244
+private outputs: 0
+wires: 33410070
+labels: 40953803
+[32mWritten successfully:[0m ../../build/devdos/devdos.r1cs
+[32mWritten successfully:[0m ../../build/devdos/devdos.sym
+[32mWritten successfully:[0m ../../build/devdos/devdos_cpp/devdos.cpp and ../../build/devdos/devdos_cpp/devdos.dat
+[32mWritten successfully:[0m ../../build/devdos/devdos_cpp/main.cpp, circom.hpp, calcwit.hpp, calcwit.cpp, fr.hpp, fr.cpp, fr.asm and Makefile
+[32mEverything went okay, circom safe[0m
+DONE (17675s)
+****COMPILING C++ WITNESS GENERATION CODE****
+g++ -c main.cpp -std=c++11 -O3 -I.
+g++ -c calcwit.cpp -std=c++11 -O3 -I.
+g++ -c fr.cpp -std=c++11 -O3 -I.
+nasm -felf64 fr.asm -o fr_asm.o
+g++ -c devdos.cpp -std=c++11 -O3 -I.
+g++ -o devdos *.o -lgmp 
+DONE (20628s)
+****GENERATING WITNESS****
+111
+7138597452374049843442357986628673314690363139209617000292486089713270058062
+11115
+1
+1
+0
+1
+0
+0
+1
+0
+0
+0
+1
+1
+1
+1
+0
+0
+1
+0
+1
+1
+1
+0
+0
+0
+1
+1
+1
+1
+0
+0
+0
+0
+0
+1
+1
+1
+1
+0
+1
+1
+1
+1
+0
+1
+1
+1
+1
+0
+1
+0
+0
+1
+1
+0
+1
+0
+0
+1
+0
+1
+0
+1
+1
+0
+0
+1
+0
+0
+1
+0
+1
+0
+0
+0
+0
+1
+0
+0
+1
+1
+0
+0
+0
+1
+1
+1
+1
+0
+1
+0
+0
+0
+1
+1
+1
+0
+0
+1
+1
+1
+0
+0
+1
+1
+0
+0
+0
+0
+1
+1
+1
+1
+0
+1
+0
+0
+0
+1
+0
+1
+1
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+1
+1
+0
+0
+0
+1
+0
+0
+0
+0
+0
+1
+1
+1
+1
+1
+1
+0
+1
+0
+0
+1
+0
+0
+1
+0
+0
+0
+0
+1
+1
+0
+0
+0
+1
+1
+0
+0
+1
+0
+0
+1
+0
+0
+1
+0
+0
+0
+0
+0
+1
+1
+1
+1
+1
+1
+1
+1
+1
+0
+1
+1
+0
+0
+1
+1
+0
+1
+0
+0
+1
+0
+0
+1
+1
+1
+1
+1
+0
+1
+1
+1
+0
+0
+0
+1
+1
+1
+0
+0
+0
+1
+0
+1
+0
+0
+1
+1
+0
+0
+0
+1
+1
+1
+0
+0
+1
+1
+1
+0
+0
+0
+0
+1
+0
+0
+0
+1
+1
+0
+0
+0
+1
+1
+1
+112
+11119309288368441543
+1766524381498509309
+5337643580528739712
+15149186589577353814
+222
+1
+333
+1
+DONE (401s)
+****GENERATING ZKEY 0****

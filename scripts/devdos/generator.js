@@ -93,7 +93,7 @@ async function generateTestCases() {
         const sinkAddress = ethAddresses[idx + 1].toLowerCase();
         console.log("sinkAddress", sinkAddress);
 
-        const msg = "\x19Ethereum Signed Message:\n42" + sinkAddress;
+        const msg = "\x19Ethereum Signed Message:\n57ETHdos friend: " + sinkAddress;
 
         const msghash_bigint = Uint8Array_to_bigint(keccak256(msg));
         const msghash = bigint_to_Uint8Array(msghash_bigint);
