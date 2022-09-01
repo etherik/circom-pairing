@@ -41,7 +41,7 @@ Subgroup check for G1:
 
 // `in` = P is 2 x k, pair of Fp elements
 // check P is on curve E(Fp)
-template SubgroupCheckG1(n, k){
+template parallel SubgroupCheckG1(n, k){
     signal input in[2][k];
 
     var b = 3;
@@ -61,7 +61,7 @@ By Proposition 3, enough to check psi(P) = [lambda]P for lambda = t - 1 = 6 * x^
 // `in` = P is 2 x 2 x k, pair of Fp2 elements 
 // check P is on curve twist E2(Fp2)
 // check psi(P) = [lambda]P where lambda = 6x^2, x is parameter for BN254
-template SubgroupCheckG2(n, k){
+template parallel SubgroupCheckG2(n, k){
     signal input in[2][2][k];
     
     var p[50] = get_bn254_prime(n, k);

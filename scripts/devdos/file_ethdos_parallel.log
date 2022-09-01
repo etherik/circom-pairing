@@ -1,0 +1,11 @@
+Found Phase 1 ptau file
+/home/nalin/code/circom-pairing/scripts/devdos
+****COMPILING C++ WITNESS GENERATION CODE****
+g++ -c devdos.cpp -std=c++11 -O3 -I.
+g++: fatal error: Killed signal terminated program cc1plus
+compilation terminated.
+make: *** [Makefile:16: devdos.o] Error 1
+DONE (3679s)
+****GENERATING WITNESS****
+./build_dev.sh: line 37: ./devdos: No such file or directory
+DONE (0s)

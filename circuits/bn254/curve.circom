@@ -13,7 +13,7 @@ include "../curve.circom";
 //  x in bn254 field size (or snark field size)
 //  `in` is point in E even if inIsInfinity = 1 just so nothing goes wrong
 //  E(Fp) has no points of order 2
-template EllipticCurveScalarMultiplySignalX(n, k, b, p){
+template parallel EllipticCurveScalarMultiplySignalX(n, k, b, p){
     signal input in[2][k];
     signal input inIsInfinity;
     signal input x;

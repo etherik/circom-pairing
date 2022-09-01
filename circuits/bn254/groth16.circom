@@ -5,7 +5,7 @@ include "subgroup_check.circom";
 include "curve.circom";
 include "pairing.circom";
 
-template verifyProof(publicInputCount) {
+template parallel verifyProof(publicInputCount) {
     // BN254 facts
     var n = 43;
     var k = 6;
