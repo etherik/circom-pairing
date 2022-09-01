@@ -224,12 +224,24 @@ template EthDos() {
     }
     groth16Verifier.pubInput[3] <== sourceAddress.address;
 
-    component innermost = IsEqual();
-    innermost.in[0] <== degree;
-    innermost.in[1] <== 1;
+    component isInnermost = IsEqual();
+    isInnermost.in[0] <== degree;
+    isInnermost.in[1] <== 1;
+
+    component originatorIsSource = IsEqual();
+    originatorIsSource.in[0] <== originator;
+    originatorIsSource.in[1] <== sourceAddress.address;
+
+    component innermost = AND();
+    innermost.a <== isInnermost.out;
+    innermost.b <== originatorIsSource.out;
+
 
     log(333);
-    log(innermost.out);
+    log(isInnermost.out);
+
+    log(101);
+    log(originatorIsSource.out);
 
     component innermostORcorrect = OR();
     innermostORcorrect.a <== innermost.out;
